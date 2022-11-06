@@ -30,7 +30,7 @@ class SxcApiRequestParams:
     @property
     def request_args(self) -> dict:
         payload = self.payload_auth_injected
-        return dict(url=self.url, data=json.dumps(payload), headers=self._get_headers_with_auth(payload))
+        return dict(url=self.url, data=json.dumps(payload), headers=self._get_headers(payload))
 
     @property
     def payload_auth_injected(self) -> dict:
@@ -43,7 +43,7 @@ class SxcApiRequestParams:
         }
         return payload
 
-    def _get_headers_with_auth(self, payload) -> dict:
+    def _get_headers(self, payload) -> dict:
         headers = self.headers
         if self.auth_required:
             headers["Hash"] = hmac.new(self.secret_key.encode("utf-8"), json.dumps(payload).encode("utf-8"),

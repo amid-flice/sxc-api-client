@@ -3,10 +3,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sxc_api_client"
-version = "0.0.1"
+name = "sxc-api-client"
+version = "0.1.1"
 authors = [
-  { name="Dmitry Kosilov", email="amidflice@gmail.com" },
+    { name="Dmitry Kosilov", email="amidflice@gmail.com" },
 ]
 description = "SouthXChange API Client"
 readme = "README.md"
@@ -15,6 +15,10 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+]
+dependencies = [
+    "StrEnum>=0.4.8",
+    "requests>=2.28.1",
 ]
 
 [project.urls]
