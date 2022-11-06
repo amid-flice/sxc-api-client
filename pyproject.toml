@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sxc_api_client"
+version = "0.0.1"
+authors = [
+  { name="Dmitry Kosilov", email="amidflice@gmail.com" },
+]
+description = "SouthXChange API Client"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/amid-flice/sxc-api-client"
+"Bug Tracker" = "https://github.com/amid-flice/sxc-api-client/issues"
