@@ -208,7 +208,7 @@ SouthXChange API.
 <a name="scroll_market_history_by_granularity"></a>
 #### scroll_market_history_by_granularity(target_currency: str, reference_currency: str, start_ts: int | float, end_ts: int | float, granularity: int, \*\*kwargs)
 List market history between two dates with given granularity. A handier version of
-`src.client.SxcApiClient.list_market_history()`
+`sxc_api_client.client.SxcApiClient.list_market_history()`
 
 
 * **Parameters**
@@ -231,12 +231,12 @@ List market history between two dates with given granularity. A handier version 
 * **Example**
 
 ```python
->>> from sxc_api_client import MarketHistoryIntervals
+>>> from sxc_api_client.constants import MarketHistoryIntervals
 >>> for m in client.scroll_market_history_by_granularity(
 ...         'ETH', 'BTC',
 ...         datetime(2022, 1, 1, tzinfo=timezone.utc).timestamp(),
 ...         datetime(2022, 1, 3, tzinfo=timezone.utc).timestamp(),
-...         MarketHistoryIntervals.DAYS_1.value):
+...         MarketHistoryIntervals.DAYS_1):
 ...     print(m)
 [
     {
@@ -505,7 +505,7 @@ Places an order in a given market.
 
 ```python
 >>> from sxc_api_client.constants import OrderTypes
->>> client.place_order('ETH', 'BTC', OrderTypes.BUY.value, 0.01, 0.068344600)
+>>> client.place_order('ETH', 'BTC', OrderTypes.BUY, 0.01, 0.068344600)
 '64065725'
 ```
 
@@ -779,7 +779,7 @@ Withdraws to a given address. Permission required: “Withdraw”.
 
 ```python
 >>> from sxc_api_client.constants import WithdrawalDestinationTypes
->>> client.withdraw('LTC', 'SOME_ADDRESS_HERE', WithdrawalDestinationTypes.CRYPTO_ADDRESS.value, 0.5)
+>>> client.withdraw('LTC', 'SOME_ADDRESS_HERE', WithdrawalDestinationTypes.CRYPTO_ADDRESS, 0.5)
 {
     'Status': 'ok',
     'Max': 0.29,
@@ -848,8 +848,8 @@ Lists all transactions. Permission required: “List Balances”.
 * **Example**
 
 ```python
->>> from sxc_api_client import TransactionTypes
->>> client.list_transactions(transaction_type=TransactionTypes.TRADES_BY_ORDER_CODE.value,
+>>> from sxc_api_client.constants import TransactionTypes
+>>> client.list_transactions(transaction_type=TransactionTypes.TRADES_BY_ORDER_CODE,
 ...                          optional_filter='199077234')
 {
     'TotalElements': 2,

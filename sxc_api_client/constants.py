@@ -1,6 +1,7 @@
 from datetime import timedelta
-from enum import Enum
+from enum import IntEnum
 from strenum import StrEnum
+
 
 MILLISECONDS_IN_SECOND = 1000
 RESPONSE_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -9,7 +10,7 @@ MAX_MARKET_HISTORY_PERIODS = 500
 MAX_PAGE_SIZE = 50
 
 
-class MarketHistoryIntervals(Enum):
+class MarketHistoryIntervals(IntEnum):
     MINUTES_1 = int(timedelta(minutes=1).total_seconds())
     MINUTES_5 = int(timedelta(minutes=5).total_seconds())
     MINUTES_30 = int(timedelta(minutes=30).total_seconds())
@@ -35,7 +36,7 @@ class OrderTypes(StrEnum):
     SELL = "sell"
 
 
-class WithdrawalDestinationTypes(Enum):
+class WithdrawalDestinationTypes(IntEnum):
     CRYPTO_ADDRESS = 0
     LIGHTNING_NETWORK_INVOICE = 1
     USER_EMAIL_ADDRESS = 2

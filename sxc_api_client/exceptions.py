@@ -61,6 +61,10 @@ class SxcMarketHistoryError(SxcApiError):
     pass
 
 
+class SxcArgumentError(SxcApiError):
+    pass
+
+
 _MESSAGE_PATTERN_ERROR_MAP = {
     re.compile("\"Invalid API key or nonce\""): SxcInvalidKeyOrNonceError,
     re.compile("\"Invalid API hash\""): SxcInvalidHashError,

@@ -4,9 +4,10 @@ from math import ceil
 from typing import Dict, Callable, Any, Generator
 
 from sxc_api_client.constants import MILLISECONDS_IN_SECOND, MAX_MARKET_HISTORY_PERIODS, RESPONSE_DATETIME_FORMAT, \
-    RESPONSE_DATETIME_FORMAT_MS, MAX_PAGE_SIZE, TransactionTypes
+    RESPONSE_DATETIME_FORMAT_MS, MAX_PAGE_SIZE, TransactionTypes, MarketHistoryIntervals, OrderTypes, \
+    WithdrawalDestinationTypes
 from sxc_api_client.exceptions import raise_by_response, SxcAuthDataMissingError, SxcInvalidMarketError, \
-    SxcMarketHistoryError
+    SxcMarketHistoryError, SxcArgumentError
 from sxc_api_client.request_params import SxcApiRequestParams
 
 
@@ -119,7 +120,7 @@ class SxcApiClient:
         `end_ts` so that difference between them is aliquot to `periods`; otherwise unexpected data may be
         returned without any warning. Besides, as a rule of thumb consider that the value of statement
         `(end_ts - start) / periods` should be equal to one of the values defined in
-        :class:`src.constants.MarketHistoryIntervals`. Hopefully those restrictions will be solved soon in
+        :class:`sxc_api_client.constants.MarketHistoryIntervals`. Hopefully those restrictions will be solved soon in
         SouthXChange API.
 
         :param target_currency: Listing currency code.
@@ -172,21 +173,22 @@ class SxcApiClient:
         return result
 
     def scroll_market_history_by_granularity(self, target_currency: str, reference_currency: str, start_ts: int | float,
-                                             end_ts: int | float, granularity: int, **kwargs) \
+                                             end_ts: int | float, granularity: MarketHistoryIntervals, **kwargs) \
             -> Generator[list[dict], None, None]:
         """
         List market history between two dates with given granularity. A handier version of
-        :meth:`src.client.SxcApiClient.list_market_history`
+        :meth:`sxc_api_client.client.SxcApiClient.list_market_history`
 
         :param target_currency: Listing currency code.
         :param reference_currency: Reference currency code.
         :param start_ts: Start timestamp from January 1, 1970.
         :param end_ts: End timestamp from January 1, 1970.
-        :param granularity: Interval in seconds. Use constants defined in :class:`src.constants.MarketHistoryIntervals`.
+        :param granularity: Interval in seconds. Use constants defined in
+            :class:`sxc_api_client.constants.MarketHistoryIntervals`.
         :param strict_mode: Raise exception if granularity in a response does not match the given one.
             Such a case is possible when either (1) arbitrary granularity (except values defined in
-            :class:`src.constants.MarketHistoryIntervals`) is provided or (2) currency pair was listed on the market
-            after the given `start_ts` or (3) `end_ts` is relatively far in the future. Defaults to True.
+            :class:`sxc_api_client.constants.MarketHistoryIntervals`) is provided or (2) currency pair was listed on the
+            market after the given `start_ts` or (3) `end_ts` is relatively far in the future. Defaults to True.
         :return: Market history.
 
         :example:
@@ -195,7 +197,7 @@ class SxcApiClient:
         ...         'ETH', 'BTC',
         ...         datetime(2022, 1, 1, tzinfo=timezone.utc).timestamp(),
         ...         datetime(2022, 1, 3, tzinfo=timezone.utc).timestamp(),
-        ...         MarketHistoryIntervals.DAYS_1.value):
+        ...         MarketHistoryIntervals.DAYS_1):
         ...     print(m)
         [
             {
@@ -454,7 +456,7 @@ class SxcApiClient:
             w[LAST_UPDATE_KEY] = self._to_datetime(w[LAST_UPDATE_KEY])
         return resp
 
-    def place_order(self, target_currency: str, reference_currency: str, order_type: str, amount: float,
+    def place_order(self, target_currency: str, reference_currency: str, order_type: OrderTypes, amount: float,
                     limit_price: float, amount_in_reference_currency: bool = False) -> str:
         """
         Places an order in a given market.
@@ -462,15 +464,15 @@ class SxcApiClient:
         :param target_currency: Market listing currency.
         :param reference_currency: Market reference currency.
         :param order_type: Order type. Possible values: "buy", "sell". Use constants defined in
-            :class:`src.constants.OrderTypes`.
+            :class:`sxc_api_client.constants.OrderTypes`.
         :param amount: Order amount in listing currency.
         :param limit_price: Optional price in reference currency. If `None` then order is executed at market price.
         :param amount_in_reference_currency: `True` if order amount is in reference currency; defaults to `False`.
         :return: Order code.
 
         :example:
-        >>> from sxc_api_client import OrderTypes
-        >>> client.place_order('ETH', 'BTC', OrderTypes.BUY.value, 0.01, 0.068344600)
+        >>> from sxc_api_client.constants import OrderTypes
+        >>> client.place_order('ETH', 'BTC', OrderTypes.BUY, 0.01, 0.068344600)
         '64065725'
         """
         payload = {
@@ -744,19 +746,20 @@ class SxcApiClient:
         )
         return self.send_request(params)
 
-    def withdraw(self, currency: str, destination: str, destination_type: int, amount: float) -> dict:
+    def withdraw(self, currency: str, destination: str, destination_type: WithdrawalDestinationTypes,
+                 amount: float) -> dict:
         """
         Withdraws to a given address. Permission required: "Withdraw".
 
         :param currency: Currency code to withdraw.
         :param destination: The withdrawal destination address.
         :param destination_type: Destination type. Use constants defined in
-         :class:`src.constants.WithdrawalDestinationTypes`.
+         :class:`sxc_api_client.constants.WithdrawalDestinationTypes`.
         :param amount: Amount to withdraw. Destination address will receive this amount minus fees.
         :return: Withdrawal data.
         :example:
-        >>> from sxc_api_client import WithdrawalDestinationTypes
-        >>> client.withdraw('LTC', 'SOME_ADDRESS_HERE', WithdrawalDestinationTypes.CRYPTO_ADDRESS.value, 0.5)
+        >>> from sxc_api_client.constants import WithdrawalDestinationTypes
+        >>> client.withdraw('LTC', 'SOME_ADDRESS_HERE', WithdrawalDestinationTypes.CRYPTO_ADDRESS, 0.5)
         {
             'Status': 'ok',
             'Max': 0.29,
@@ -807,14 +810,14 @@ class SxcApiClient:
         return self.send_request(params)
 
     def list_transactions(self, target_currency: str = None,
-                          transaction_type: str = TransactionTypes.TRANSACTIONS.value,
-                          optional_filter: int = None, page_index: int = 0,
+                          transaction_type: TransactionTypes = TransactionTypes.TRANSACTIONS,
+                          optional_filter: str = None, page_index: int = 0,
                           page_size: int = MAX_PAGE_SIZE) -> dict:
         """
         Lists all transactions. Permission required: "List Balances".
 
         :param target_currency: Currency code.
-        :param transaction_type: Transaction type. Refer to class :class:`src.constants.TransactionTypes`
+        :param transaction_type: Transaction type. Refer to class :class:`sxc_api_client.constants.TransactionTypes`
             to get all allowed values. Note: If "transactions" is provided then trade transactions and buy fees are
             returned; if you want to get fee for sell order then you have to make a request once again with
             `target_currency` = reference currency and filter a response by relevant "TradeId".
@@ -827,9 +830,9 @@ class SxcApiClient:
         :return: Transactions data.
 
         :example:
-        >>> from sxc_api_client import TransactionTypes
-        >>> client.list_transactions(transaction_type=TransactionTypes.TRADES_BY_ORDER_CODE.value,
-        ...                          optional_filter='199077234')
+        >>> from sxc_api_client.constants import TransactionTypes
+        >>> client.list_transactions(transaction_type=TransactionTypes.TRADES_BY_ORDER_CODE,
+        ...                          optional_filter="199077234")
         {
             'TotalElements': 2,
             'Result': [
@@ -883,6 +886,8 @@ class SxcApiClient:
         if target_currency:
             payload["currency"] = target_currency
         if transaction_type in (TransactionTypes.TRADES_BY_ORDER_CODE, TransactionTypes.DEPOSITS_BY_ADDRESS_ID):
+            if not optional_filter:
+                raise SxcArgumentError("Argument `optional_filter` must be specified.")
             payload["optionalFilter"] = optional_filter
 
         params = self._get_request_params(
