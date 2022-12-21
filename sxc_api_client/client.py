@@ -1,6 +1,5 @@
 import requests
 from datetime import datetime, timezone
-from math import ceil
 from typing import Dict, Callable, Any, Generator
 
 from sxc_api_client.constants import MILLISECONDS_IN_SECOND, MAX_MARKET_HISTORY_PERIODS, RESPONSE_DATETIME_FORMAT, \
@@ -235,7 +234,7 @@ class SxcApiClient:
         DATE_KEY = "Date"
         strict_mode = kwargs.get('strict_mode', True)
 
-        periods = int(ceil((end_ts - start_ts) / granularity))
+        periods = max(1, int((end_ts - start_ts) / granularity))
         req_start_ts = start_ts
         periods_remained = periods
         while periods_remained > 0:
