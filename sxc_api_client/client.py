@@ -234,7 +234,7 @@ class SxcApiClient:
         DATE_KEY = "Date"
         strict_mode = kwargs.get('strict_mode', True)
 
-        periods = int((end_ts - start_ts) / granularity)
+        periods = max(1, int((end_ts - start_ts) / granularity))
         req_start_ts = start_ts
         periods_remained = periods
         while periods_remained > 0:
