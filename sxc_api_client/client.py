@@ -16,7 +16,7 @@ class SxcApiClient:
     def __init__(self, access_key: str = '', secret_key: str = ''):
         self.access_key = access_key
         self.secret_key = secret_key
-        self.__session = None
+        self.session = requests.Session()
 
     @staticmethod
     def send_request(params: SxcApiRequestParams) -> Any:
@@ -43,7 +43,7 @@ class SxcApiClient:
         ]
         """
         params = self._get_request_params(
-            method=self._session.get,
+            method=self.session.get,
             url=f"{self._BASE_URL}/markets"
         )
         return self.send_request(params)
@@ -67,7 +67,7 @@ class SxcApiClient:
         }
         """
         params = self._get_request_params(
-            method=self._session.get,
+            method=self.session.get,
             url=f"{self._BASE_URL}/price/{target_currency}/{reference_currency}"
         )
         resp = self.send_request(params)
@@ -104,7 +104,7 @@ class SxcApiClient:
         """
         LAST_UPDATE_KEY = "LastUpdate"
         params = self._get_request_params(
-            method=self._session.get,
+            method=self.session.get,
             url=f"{self._BASE_URL}/prices",
             auth_required=True
         )
@@ -163,7 +163,7 @@ class SxcApiClient:
         """
         DATE_KEY = "Date"
         params = self._get_request_params(
-            method=self._session.get,
+            method=self.session.get,
             url=f"{self._BASE_URL}/history/{target_currency}/{reference_currency}/"
                 f"{int(start_ts * MILLISECONDS_IN_SECOND)}/{int(end_ts * MILLISECONDS_IN_SECOND)}/{periods}"
         )
@@ -289,7 +289,7 @@ class SxcApiClient:
         }
         """
         params = self._get_request_params(
-            method=self._session.get,
+            method=self.session.get,
             url=f"{self._BASE_URL}/book/{target_currency}/{reference_currency}"
         )
         resp = self.send_request(params)
@@ -322,7 +322,7 @@ class SxcApiClient:
         ]
         """
         params = self._get_request_params(
-            method=self._session.get,
+            method=self.session.get,
             url=f"{self._BASE_URL}/trades/{target_currency}/{reference_currency}"
         )
         return self.send_request(params)
@@ -389,7 +389,7 @@ class SxcApiClient:
         }
         """
         params = self._get_request_params(
-            method=self._session.get,
+            method=self.session.get,
             url=f"{self._BASE_URL}/fees"
         )
         return self.send_request(params)
@@ -406,7 +406,7 @@ class SxcApiClient:
         {'TraderLevel': 'TraderLevel1'}
         """
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/getUserInfo",
             auth_required=True
         )
@@ -447,7 +447,7 @@ class SxcApiClient:
         """
         LAST_UPDATE_KEY = "LastUpdate"
         params = self._get_request_params(
-            method=self._session.get,
+            method=self.session.get,
             url=f"{self._BASE_URL}/wallets",
             auth_required=True
         )
@@ -485,7 +485,7 @@ class SxcApiClient:
         if limit_price:
             payload["limitPrice"] = limit_price
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/placeOrder",
             payload=payload,
             auth_required=True
@@ -503,7 +503,7 @@ class SxcApiClient:
         >>> client.cancel_order('60000000')
         """
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/cancelOrder",
             payload={
                 "orderCode": order_code
@@ -524,7 +524,7 @@ class SxcApiClient:
         >>> client.cancel_market_orders('ETC', 'BTC')
         """
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/cancelMarketOrders",
             payload={
                 "listingCurrency": target_currency,
@@ -567,7 +567,7 @@ class SxcApiClient:
         """
         DATE_ADDED_KEY = "DateAdded"
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/listOrders",
             auth_required=True
         )
@@ -599,7 +599,7 @@ class SxcApiClient:
         """
         DATE_ADDED_KEY = "DateAdded"
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/getOrder",
             payload={
                 "code": code
@@ -649,7 +649,7 @@ class SxcApiClient:
         """
         DATE_ADDED_KEY = "DateAdded"
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/getOrders",
             payload={
                 "code": codes,
@@ -678,7 +678,7 @@ class SxcApiClient:
         }
         """
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/generateNewAddress",
             payload={
                 "currency": currency
@@ -712,7 +712,7 @@ class SxcApiClient:
         }
         """
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/listAddresses",
             payload={
                 "currency": currency,
@@ -736,7 +736,7 @@ class SxcApiClient:
         'lnbc20m1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqhp58yjmdan79s6...'
         """
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/getLNInvoice",
             payload={
                 "currency": currency,
@@ -768,7 +768,7 @@ class SxcApiClient:
         }
         """
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/withdraw",
             payload={
                 "currency": currency,
@@ -803,7 +803,7 @@ class SxcApiClient:
         ]
         """
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/listBalances",
             auth_required=True
         )
@@ -891,7 +891,7 @@ class SxcApiClient:
             payload["optionalFilter"] = optional_filter
 
         params = self._get_request_params(
-            method=self._session.post,
+            method=self.session.post,
             url=f"{self._BASE_URL}/listTransactions",
             payload=payload,
             auth_required=True
@@ -901,12 +901,6 @@ class SxcApiClient:
         for tx in resp["Result"]:
             tx[DATE_KEY] = self._to_datetime(tx[DATE_KEY])
         return resp
-
-    @property
-    def _session(self):
-        if not self.__session:
-            self.__session = requests.Session()
-        return self.__session
 
     @staticmethod
     def _to_datetime(datetime_str: str) -> datetime:
