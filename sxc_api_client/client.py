@@ -13,17 +13,17 @@ from sxc_api_client.request_params import SxcApiRequestParams
 class SxcApiClient:
     _BASE_URL = "https://www.southxchange.com/api/v4"
 
-    def __init__(self, access_key: str = '', secret_key: str = ''):
+    def __init__(self, access_key: str = '', secret_key: str = '', timeout: int | float = 10):
         self.access_key = access_key
         self.secret_key = secret_key
         self.session = requests.Session()
+        self.timeout = timeout
 
-    @staticmethod
-    def send_request(params: SxcApiRequestParams) -> Any:
+    def send_request(self, params: SxcApiRequestParams) -> Any:
         if params.auth_required and not all([params.access_key, params.secret_key]):
             raise SxcAuthDataMissingError("Request requires authentication. Please provide API access and secret keys.")
         func_request = params.method
-        resp = func_request(**params.request_args)
+        resp = func_request(**params.request_args, timeout=self.timeout)
         raise_by_response(resp)
         if resp.status_code == 204:
             return None

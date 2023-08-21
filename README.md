@@ -48,10 +48,10 @@ from sxc_api_client import SxcApiClient
 client = SxcApiClient()
 markets = client.list_markets()
 ```
-If you are going to have a deal with private data as well (i.e. bound to a specific account) you have to provide your API access and secret keys:
+If you are going to have a deal with private data as well (i.e. bound to a specific account) you have to provide your API access and secret keys. Optionally, you may also specify connect/read timeout in seconds either as a single value or a tuple; by default, timeout is set to 10 seconds.
 ```python
 from sxc_api_client import SxcApiClient
-client = SxcApiClient("your_access_key", "your_secret_key")
+client = SxcApiClient("your_access_key", "your_secret_key", timeout=5)
 orders = client.list_pending_orders()
 ```
 

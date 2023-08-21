@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sxc-api-client"
-version = "0.1.7"
+version = "0.1.8"
 authors = [
     { name="Dmitry Kosilov", email="amidflice@gmail.com" },
 ]
