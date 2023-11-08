@@ -11,7 +11,7 @@ from sxc_api_client.request_params import SxcApiRequestParams
 
 
 class SxcApiClient:
-    _BASE_URL = "https://www.southxchange.com/api/v4"
+    _BASE_URL = "https://market.southxchange.com/api/v4"
 
     def __init__(self, access_key: str = '', secret_key: str = '', timeout: int | float = 10):
         self.access_key = access_key
